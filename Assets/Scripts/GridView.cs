@@ -8,13 +8,13 @@ namespace Game
     {
         #region Inspector
 
-        [SerializeField] int _Rows = 10;
+        public float width = 10;
 
-        [SerializeField] int _Columns = 10;
+        public float height = 10;
 
-        [SerializeField] float _Width = 10;
+        public int rows = 10;
 
-        [SerializeField] float _Height = 10;
+        public int columns = 10;
 
         [SerializeField] float _CellBorderPercent = 0.1f;
 
@@ -24,21 +24,18 @@ namespace Game
 
         public Node[,] Nodes { get; private set; }
 
-        float GetCellWidth() => _Width / _Columns;
+        float GetCellWidth() => width / columns;
 
-        float GetCellHeight() => _Height / _Rows;
+        float GetCellHeight() => height / rows;
 
-        void Awake()
-        {
-            CreateGrid();
-        }
+        Transform _parent;
 
         Vector3 GetCellPosition(int x, int y)
         {
             var cellWidth = GetCellWidth();
             var cellHeight = GetCellHeight();
             var p = transform.position;
-            var leftTopCorner = new Vector2(p.x - _Width / 2 + cellWidth / 2, p.y - _Height / 2 + cellHeight / 2);
+            var leftTopCorner = new Vector2(p.x - width / 2 + cellWidth / 2, p.y - height / 2 + cellHeight / 2);
             return new Vector3(leftTopCorner.x + x * cellWidth, leftTopCorner.y + y * cellHeight, p.z);
         }
 
@@ -49,27 +46,48 @@ namespace Game
             return new Vector3((1 - _CellBorderPercent) * cellWidth, (1 - _CellBorderPercent) * cellHeight, 0);
         }
 
-        void CreateGrid()
+        public void CreateGrid(bool[,] grids)
         {
+            if (_parent != null)
+            {
+                Destroy(_parent.gameObject);
+            }
+
+            columns = grids.GetLength(0);
+            rows = grids.GetLength(1);
+
+            _parent = new GameObject("<Cells>").transform;
+            _parent.SetParent(transform);
+
             var cellSize = GetCellSize();
 
-            Nodes = new Node[_Columns, _Rows];
+            Nodes = new Node[columns, rows];
 
-            for (int x = 0; x < _Columns; x++)
+            for (int x = 0; x < columns; x++)
             {
-                for (int y = 0; y < _Rows; y++)
+                for (int y = 0; y < rows; y++)
                 {
                     var gridCell = Instantiate(_GridCellPrefab);
-                    gridCell.transform.SetParent(transform, false);
+                    gridCell.transform.SetParent(_parent, false);
 
                     gridCell.transform.localScale = cellSize;
                     gridCell.transform.position = GetCellPosition(x, y);
-                    gridCell.SetState(GridCell.CellState.Empty);
+                    
                     gridCell.SetTextVisibility(false);
                     gridCell.node = new Node(x, y, gridCell);
                     gridCell.name = $"GridCell({x},{y})";
 
                     Nodes[x, y] = gridCell.node;
+
+                    if (grids[x, y])
+                    {
+                        gridCell.node.state = NodeState.Blocked;
+                        gridCell.SetState(GridCell.CellState.Blocked);
+                    } else
+                    {
+                        gridCell.node.state = NodeState.Open;
+                        gridCell.SetState(GridCell.CellState.Empty);
+                    }
                 }
             }
         }
@@ -77,7 +95,7 @@ namespace Game
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.blue;
-            Gizmos.DrawWireCube(transform.position, new Vector3(_Width, _Height, 0));
+            Gizmos.DrawWireCube(transform.position, new Vector3(width, height, 0));
         }
     }
 }

@@ -7,12 +7,12 @@ namespace Game
 {
     public enum NodeState
     {
-        Openned, Blocked
+        Open, Blocked
     }
 
     public class Node
     {
-        public NodeState state = NodeState.Openned;
+        public NodeState state = NodeState.Open;
 
         public int f => g + h;
         public int h;
@@ -50,19 +50,18 @@ namespace Game
         Node _startNode;
 
         Node _goalNode;
-        public List<Node> path { get; private set; }
 
-        List<Node> GetPath(Node node)
+        List<Vector3> GetPath(Node node)
         {
-            var result = new List<Node>() { node };
+            var result = new List<Vector3>() { node.cell.transform.position };
             var n = node;
             while (true)
             {
                 n = n.connection;
-                result.Add(n);
-
                 if (n == null)
                     break;
+
+                result.Add(n.cell.transform.position);
 
                 if (n == _startNode)
                 {
@@ -76,7 +75,6 @@ namespace Game
 
         public IEnumerator Search(Node startNode, Node goalNode)
         {
-            path = null;
             _startNode = startNode;
             _goalNode = goalNode;
 
@@ -108,7 +106,6 @@ namespace Game
 
                 if (bestF == goalNode)
                 {
-                    path = GetPath(bestF);
                     break;
                 }
 
@@ -119,15 +116,25 @@ namespace Game
 
                 foreach (var neighbor in GetNeighbors(bestF))
                 {
-                    if (!toSearch.Contains(neighbor) && !opened.Contains(neighbor) && neighbor.state == NodeState.Openned) {
-                        neighbor.g = bestF.g + CalculateHeuristic(bestF, neighbor);
-                        neighbor.h = CalculateHeuristic(neighbor, goalNode);
-                        SetState(neighbor, GridCell.CellState.Frontier);
-                        UpdateText(neighbor);
+                    if (!opened.Contains(neighbor) && neighbor.state == NodeState.Open)
+                    {
+                        var g = bestF.g + CalculateHeuristic(bestF, neighbor);
+                        if (neighbor.g > g)
+                        {
+                            neighbor.g = g;
+                            neighbor.h = CalculateHeuristic(neighbor, goalNode);
+                            neighbor.connection = bestF;
+                        }
 
-                        toSearch.Add(neighbor);
+                        if (!toSearch.Contains(neighbor))
+                        {
+                            SetState(neighbor, GridCell.CellState.Frontier);
+                            UpdateText(neighbor);
 
-                        neighbor.connection = bestF;
+                            toSearch.Add(neighbor);
+
+                            neighbor.connection = bestF;
+                        }
                     }
                 }
 
@@ -189,6 +196,8 @@ namespace Game
                 for (int y = 0; y < _gridView.Nodes.GetLength(1); y++)
                 {
                     var node = _gridView.Nodes[x, y];
+                    node.g = int.MaxValue;
+                    node.h = int.MaxValue;
                     var cell = node.cell;
 
                     cell.SetTextVisibility(false);
@@ -197,7 +206,7 @@ namespace Game
                         node == _goalNode)
                         continue;
 
-                    if (node.state == NodeState.Openned)
+                    if (node.state == NodeState.Open)
                     {
                         cell.SetState(GridCell.CellState.Empty);
                     } else
