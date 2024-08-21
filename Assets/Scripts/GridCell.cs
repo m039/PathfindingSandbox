@@ -7,7 +7,7 @@ namespace Game
     {
         public enum CellState
         {
-            Empty, StartNode, GoalNode, Frontier, Opened
+            Empty, StartNode, GoalNode, Frontier, Opened, Blocked
         }
 
         #region Inspector
@@ -35,9 +35,7 @@ namespace Game
 
         public float h { set => _H.text = value.ToString(); }
 
-        public int x { get; set; }
-
-        public int y { get; set; }
+        public Node node { get; set; }
 
         public Color color { set => _Renderer.color = value; }
 

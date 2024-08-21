@@ -1,3 +1,5 @@
+using m039.Common.Pathfindig;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,11 +13,16 @@ namespace Game
         [SerializeField]
         GridView _GridView;
 
+        [SerializeField]
+        LineRenderer _LineRenderer;
+
         #endregion
 
-        GridCell _currentCell;
+        Node _currentNode;
 
-        GridCell _goalCell;
+        Node _goalNode;
+
+        Node _startNode;
 
         static readonly RaycastHit2D[] s_Buffer = new RaycastHit2D[16];
 
@@ -26,7 +33,8 @@ namespace Game
 
         void Init()
         {
-            _GridView.Cells[0, 0].SetState(GridCell.CellState.StartNode);
+            _startNode = _GridView.Nodes[0, 0];
+            _startNode.cell.SetState(GridCell.CellState.StartNode);
         }
 
         void Update()
@@ -38,7 +46,7 @@ namespace Game
 
         public void OnFindPathClicked()
         {
-            if (_goalCell == null)
+            if (_goalNode == null)
             {
                 Debug.LogWarning("Can't find a path, the goal node is missing!");
                 return;
@@ -49,7 +57,12 @@ namespace Game
 
         IEnumerator FindPathCoroutine()
         {
-            yield return new Pathfinder(_GridView).Search(_GridView.Cells[0, 0], _goalCell);
+            _LineRenderer.positionCount = 0;
+
+            var pathfinder = new Pathfinder(this, _GridView);
+
+            yield return pathfinder.Search(_startNode, _goalNode);
+
             _findPathCoroutine = null;
         }
 
@@ -58,6 +71,7 @@ namespace Game
             if (_findPathCoroutine != null)
             {
                 StopCoroutine(_findPathCoroutine);
+                _findPathCoroutine = null;
             }
         }
 
@@ -69,25 +83,43 @@ namespace Game
 
             if (Input.GetMouseButtonDown(0))
             {
-                if (_currentCell != null)
+                if (_currentNode != null)
                 {
-                    var state = _currentCell.GetState();
-                    if (state != GridCell.CellState.StartNode && state != GridCell.CellState.GoalNode)
+                    if (_currentNode != _startNode && _currentNode != _goalNode)
                     {
-                        if (_goalCell != null)
+                        if (_goalNode != null)
                         {
-                            _goalCell.SetState(GridCell.CellState.Empty);
+                            _goalNode.cell.SetState(GridCell.CellState.Empty);
                         }
-                        _goalCell = _currentCell;
-                        _goalCell.SetState(GridCell.CellState.GoalNode);
-                    } else if (state == GridCell.CellState.GoalNode)
+                        _goalNode = _currentNode;
+                        _goalNode.cell.SetState(GridCell.CellState.GoalNode);
+                    } else if (_currentNode == _goalNode)
                     {
-                        if (_goalCell != null)
+                        if (_goalNode != null)
                         {
-                            _goalCell.SetState(GridCell.CellState.Empty);
+                            _goalNode.cell.SetState(GridCell.CellState.Empty);
                         }
-                        _goalCell = _currentCell;
-                        _goalCell.SetState(GridCell.CellState.Empty);
+                        _goalNode = _currentNode;
+                        _goalNode.cell.SetState(GridCell.CellState.Empty);
+                    }
+                }
+            }
+
+            if (Input.GetMouseButtonDown(1))
+            {
+                if (_currentNode != null)
+                {
+                    if (_currentNode != _startNode && _currentNode != _goalNode)
+                    {
+                        if (_currentNode.state == NodeState.Openned)
+                        {
+                            _currentNode.state = NodeState.Blocked;
+                            _currentNode.cell.SetState(GridCell.CellState.Blocked);
+                        } else
+                        {
+                            _currentNode.state = NodeState.Openned;
+                            _currentNode.cell.SetState(GridCell.CellState.Empty);
+                        }
                     }
                 }
             }
@@ -98,26 +130,41 @@ namespace Game
             {
                 if (s_Buffer[i].collider.GetComponentInParent<GridCell>() is GridCell gridCell)
                 {
-                    if (_currentCell != null && _currentCell != gridCell)
+                    if (_currentNode != null && _currentNode != gridCell.node)
                     {
-                        _currentCell.SetHighlighted(false);
-                        _currentCell = null;
+                        _currentNode.cell.SetHighlighted(false);
+                        _currentNode = null;
                     }
 
-                    if (_currentCell == null)
+                    if (_currentNode == null)
                     {
-                        _currentCell = gridCell;
-                        _currentCell.SetHighlighted(true);
+                        _currentNode = gridCell.node;
+                        _currentNode.cell.SetHighlighted(true);
                     }
 
                     return;
                 }
             }
 
-            if (_currentCell != null)
+            if (_currentNode != null)
             {
-                _currentCell.SetHighlighted(false);
-                _currentCell = null;
+                _currentNode.cell.SetHighlighted(false);
+                _currentNode = null;
+            }
+        }
+
+        public void DrawPath(List<Node> path)
+        {
+            if (path != null)
+            {
+                _LineRenderer.positionCount = path.Count;
+                for (int i = 0; i < path.Count; i++)
+                {
+                    _LineRenderer.SetPosition(i, path[i].cell.transform.position);
+                }
+            } else
+            {
+                _LineRenderer.positionCount = 0;
             }
         }
     }

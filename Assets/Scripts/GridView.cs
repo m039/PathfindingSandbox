@@ -22,9 +22,7 @@ namespace Game
 
         #endregion
 
-        GridCell[,] _cells;
-
-        public GridCell[,] Cells => _cells;
+        public Node[,] Nodes { get; private set; }
 
         float GetCellWidth() => _Width / _Columns;
 
@@ -55,7 +53,8 @@ namespace Game
         {
             var cellSize = GetCellSize();
 
-            _cells = new GridCell[_Columns, _Rows];
+            Nodes = new Node[_Columns, _Rows];
+
             for (int x = 0; x < _Columns; x++)
             {
                 for (int y = 0; y < _Rows; y++)
@@ -63,15 +62,14 @@ namespace Game
                     var gridCell = Instantiate(_GridCellPrefab);
                     gridCell.transform.SetParent(transform, false);
 
-                    _cells[x, y] = gridCell;
-
                     gridCell.transform.localScale = cellSize;
                     gridCell.transform.position = GetCellPosition(x, y);
                     gridCell.SetState(GridCell.CellState.Empty);
                     gridCell.SetTextVisibility(false);
-                    gridCell.x = x;
-                    gridCell.y = y;
+                    gridCell.node = new Node(x, y, gridCell);
                     gridCell.name = $"GridCell({x},{y})";
+
+                    Nodes[x, y] = gridCell.node;
                 }
             }
         }
