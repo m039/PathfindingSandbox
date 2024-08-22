@@ -1481,6 +1481,8 @@ MonoBehaviour:
       m_Image: {fileID: 0}
     - m_Text: Debug Pathfinding
       m_Image: {fileID: 0}
+    - m_Text: Ronen Pathfinding
+      m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1964,7 +1966,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   version: 1
   data:
-    dataString: UEsDBBQAAAgIAAAYIew7UyeaOQAAAEYAAAAJACQAbWV0YS5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0Bq1YqSy0qzszPU7JSMNEz0jM011FQSi9KLMgoBooYgjilmSkgdnReaU5OLFCgpLIg1S8xNxUhWAsAUEsBAi0AFAAACAgAABgh7DtTJ5o5AAAARgAAAAkAJAAAAAAAAAAAAAAAAAAAAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLBQYAAAAAAQABAFsAAACEAAAAAAA=
+    dataString: UEsDBBQAAAgIAAAYIexYBZyOYQIAACkFAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQF1VE1z2jAQ/SuMzk3GfCSMe2sdQnogYUI7ufgipDXWIEsefQRIhv/elWxjh059Qex7u/veau1PIpStgTltlkbwleZAvo9IOJNvox58giPdabURH9Bx3gR3ZSDRyHmlTmiMj0Oa1RU4I9gPtZOBnGDQK1FoUy34DjJtncVwQaUFhIx2IVth6HNEjvhzk4aUE54m83D6wFOajM54ZKAcmJ7aETtaw/KKSVrVwIPknpzepvFpc7q/MUWhsZad3I7v43M3Dx21lMK2+og71dF/Rmvr0R0SuKDoN4oK9ksQu9IF7cPkl6Kw4Fqhhp4ehMGxNVXJT93MsqJ236h9p9LDxU5TcvUPejOOcGF09dR1HSehgysF27/SE6PWDUY9DD98le3Vgco93Up4K0E966XRXnEEnfEh1VuYPAxKXZxlJbD9AGjEXkd9/f87CzbO0f4xk6LaxiuYNYGN1HHgcSPA4CX9Qs1xX2xbAqNBxx8Lv+luuFgt8CiMdQi1RlXQt9XeBCpZxLEFP95l2iiI4dZzDYpKd1pjGXd9h1fYoO0V8kjDK9Q2b7HuzbhKieGenyRX0FofLvdlS31YgS1fvJNCQS86AM84p0wr1azYcCZd2sabgrJB2s4L/nW7yB2bzuh0VqQpuy8K4DfbeTrl43nCWMHnk2lC4voJhT6pXDdC2/Hgram+uMJV674so6WhdVx3buhhKT4qPRi5UIXeMAOgXpoKF+FgsAm+oHzBBQ5oA84JFe+bfOZEarYHnl8K5dHp4ugMzfsqOanFu3YhkpMsfkpyEsKXbV4beBdwCM27Ymdy/gtQSwMEFAAACAgAABgh7G75h0htAAAAeAAAAAkAJABtZXRhLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQGrVipLLSrOzM9TslIw0TPSMzTXUVBKL0osyCgGihiCOKWZKSB2tJJpsrFJorFJmqVlsllaWmqKbpK5pXGKoblBcnJairmRsYFSLFB9SWVBql9ibipET0BiSUZaZl5KZl66nntRZoo7yGil2FoAUEsBAi0AFAAACAgAABgh7FgFnI5hAgAAKQUAAAsAJAAAAAAAAAAAAAAAAAAAAGdyYXBoMC5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0BUEsBAi0AFAAACAgAABgh7G75h0htAAAAeAAAAAkAJAAAAAAAAAAAAAAArgIAAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLBQYAAAAAAgACALgAAABmAwAAAAA=
     upgradeData: 
     file_cachedStartup: {fileID: 0}
     data_cachedStartup: 
@@ -1996,7 +1998,7 @@ MonoBehaviour:
   heuristic: 2
   heuristicScale: 1
   threadCount: 1
-  maxFrameTime: 1
+  maxFrameTime: 10
   batchGraphUpdates: 0
   graphUpdateBatchingInterval: 0.2
   euclideanEmbedding:
@@ -2324,7 +2326,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 50
   m_Viewport: {fileID: 1868828827}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 1283850813}

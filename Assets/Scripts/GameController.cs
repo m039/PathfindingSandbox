@@ -114,7 +114,6 @@ namespace Game
                 var width = _GridView.columns;
                 var height = _GridView.rows;
                 var nodeSize = _GridView.height / height;
-                //_gridGraph.SetDimensions(width, height, nodeSize);
 
                 AstarPath.active.Scan();
 
@@ -129,7 +128,7 @@ namespace Game
 
                 _gridGraph.GetNodes(node => _gridGraph.CalculateConnections((GridNodeBase)node));
 
-                float time = Time.realtimeSinceStartup;
+                float time = 0f;
 
                 var p = ABPath.Construct(_startNode.cell.transform.position, _goalNode.cell.transform.position, p =>
                 {
@@ -138,12 +137,36 @@ namespace Game
                     DrawPath(p.vectorPath);
                 });
 
+                time = Time.realtimeSinceStartup;
+
                 AstarPath.StartPath(p);
 
             } else if (variant == "Debug Pathfinding")
             {
                 _findPathCoroutine = StartCoroutine(FindPathCoroutine());
 
+            } else if (variant == "Ronen Pathfinding")
+            {
+                var width = _GridView.columns;
+                var height = _GridView.rows;
+
+                var tilesmap = new bool[width, height];
+                for (int x = 0; x < width; x++)
+                {
+                    for (int y = 0; y < height; y++)
+                    {
+                        tilesmap[x, y] = _GridView.Nodes[x, y].state == NodeState.Open;
+                    }
+                }
+
+                var from = new PathFind.Point(_startNode.x, _startNode.y);
+                var to = new PathFind.Point(_goalNode.x, _goalNode.y);
+
+                float time = Time.realtimeSinceStartup;
+                var path = PathFind.Pathfinding.FindPath(new PathFind.Grid(width, height, tilesmap), from, to);
+                Debug.Log("Ronen Pathfinding: elapse time = " + ((Time.realtimeSinceStartup - time) * 1000) + " ms.");
+
+                DrawPath(path.Select(p => _GridView.Nodes[p.x, p.y].cell.transform.position).ToList());
             }
         }
 
