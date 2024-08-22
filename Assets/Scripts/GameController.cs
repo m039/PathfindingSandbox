@@ -78,7 +78,7 @@ namespace Game
 
             var variant = _SearchVariant.options[_SearchVariant.value].text;
 
-            if (variant == "Common Pathfinding")
+            if (variant == "m039 Pathfinding")
             {
                 _GraphController.width = _GridView.width;
                 _GraphController.height = _GridView.height;
@@ -102,7 +102,7 @@ namespace Game
 
                 float time = Time.realtimeSinceStartup;
                 var path = pathfinder.Search(graph.GetNode(_startNode.x, _startNode.y), graph.GetNode(_goalNode.x, _goalNode.y));
-                Debug.Log("Common Pathfinding: elapse time = " + ((Time.realtimeSinceStartup - time) * 1000) + " ms.");
+                Debug.Log("m039 Pathfinding: elapse time = " + ((Time.realtimeSinceStartup - time) * 1000) + " ms.");
                 DrawPath(path.vectorPath);
             } else if (variant == "A* Pathfinding Project")
             {
@@ -139,7 +139,7 @@ namespace Game
 
                 time = Time.realtimeSinceStartup;
 
-                AstarPath.StartPath(p);
+                AstarPath.StartPath(p, true);
 
             } else if (variant == "Debug Pathfinding")
             {
