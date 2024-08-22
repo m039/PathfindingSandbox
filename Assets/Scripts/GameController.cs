@@ -1,10 +1,8 @@
 using m039.Common.Pathfindig;
 using Pathfinding;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 
 namespace Game
@@ -27,6 +25,12 @@ namespace Game
 
         [SerializeField]
         GraphController _GraphController;
+
+        [SerializeField]
+        TMPro.TMP_Text _ResultText;
+
+        [SerializeField]
+        RectTransform _SaveButton;
 
         #endregion
 
@@ -57,6 +61,18 @@ namespace Game
             {
                 OnLoadClicked();
             }
+
+            _ResultText.transform.parent.gameObject.SetActive(false);
+
+#if !UNITY_EDITOR
+            _SaveButton.gameObject.SetActive(false);
+#endif
+        }
+
+        void SetResult(string text)
+        {
+            _ResultText.transform.parent.gameObject.SetActive(true);
+            _ResultText.text = text;
         }
 
         void Update()
@@ -75,6 +91,8 @@ namespace Game
                 Debug.LogWarning("Can't find a path, the goal node is missing!");
                 return;
             }
+
+            _GridView.ResetCellsState(_startNode, _goalNode);
 
             var variant = _SearchVariant.options[_SearchVariant.value].text;
 
@@ -99,10 +117,9 @@ namespace Game
 
                 var graph = new Graph(_GraphController, grids);
                 var pathfinder = graph.CreatePahtfinder();
-
                 float time = Time.realtimeSinceStartup;
                 var path = pathfinder.Search(graph.GetNode(_startNode.x, _startNode.y), graph.GetNode(_goalNode.x, _goalNode.y));
-                Debug.Log("m039 Pathfinding: elapse time = " + ((Time.realtimeSinceStartup - time) * 1000) + " ms.");
+                SetResult("m039 Pathfinding: elapse time = " + ((Time.realtimeSinceStartup - time) * 1000) + " ms.");
                 DrawPath(path.vectorPath);
             } else if (variant == "A* Pathfinding Project")
             {
@@ -132,14 +149,14 @@ namespace Game
 
                 var p = ABPath.Construct(_startNode.cell.transform.position, _goalNode.cell.transform.position, p =>
                 {
-                    Debug.Log("A* Project Pathfinding: elapse time = " + ((Time.realtimeSinceStartup - time) * 1000) + " ms.");
-
+                    SetResult("A* Project Pathfinding: elapse time = " + ((Time.realtimeSinceStartup - time) * 1000) + " ms.");
                     DrawPath(p.vectorPath);
                 });
 
                 time = Time.realtimeSinceStartup;
 
                 AstarPath.StartPath(p, true);
+                AstarPath.BlockUntilCalculated(p);
 
             } else if (variant == "Debug Pathfinding")
             {
@@ -147,6 +164,7 @@ namespace Game
 
             } else if (variant == "Ronen Pathfinding")
             {
+
                 var width = _GridView.columns;
                 var height = _GridView.rows;
 
@@ -164,7 +182,7 @@ namespace Game
 
                 float time = Time.realtimeSinceStartup;
                 var path = PathFind.Pathfinding.FindPath(new PathFind.Grid(width, height, tilesmap), from, to);
-                Debug.Log("Ronen Pathfinding: elapse time = " + ((Time.realtimeSinceStartup - time) * 1000) + " ms.");
+                SetResult("Ronen Pathfinding: elapse time = " + ((Time.realtimeSinceStartup - time) * 1000) + " ms.");
 
                 DrawPath(path.Select(p => _GridView.Nodes[p.x, p.y].cell.transform.position).ToList());
             }

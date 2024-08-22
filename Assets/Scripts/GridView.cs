@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -96,6 +97,35 @@ namespace Game
         {
             Gizmos.color = Color.blue;
             Gizmos.DrawWireCube(transform.position, new Vector3(width, height, 0));
+        }
+
+        public void ResetCellsState(Node startNode, Node goalNode)
+        {
+            for (int x = 0; x < Nodes.GetLength(0); x++)
+            {
+                for (int y = 0; y < Nodes.GetLength(1); y++)
+                {
+                    var node = Nodes[x, y];
+                    node.g = int.MaxValue;
+                    node.h = int.MaxValue;
+                    var cell = node.cell;
+
+                    cell.SetTextVisibility(false);
+
+                    if (node == startNode ||
+                        node == goalNode)
+                        continue;
+
+                    if (node.state == NodeState.Open)
+                    {
+                        cell.SetState(GridCell.CellState.Empty);
+                    }
+                    else
+                    {
+                        cell.SetState(GridCell.CellState.Blocked);
+                    }
+                }
+            }
         }
     }
 }

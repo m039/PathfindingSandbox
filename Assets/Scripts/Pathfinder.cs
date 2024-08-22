@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace Game
@@ -77,8 +76,6 @@ namespace Game
         {
             _startNode = startNode;
             _goalNode = goalNode;
-
-            ResetCellsState();
 
             startNode.connection = null;
             startNode.g = 0;
@@ -187,34 +184,6 @@ namespace Game
             }
 
             return neighbors;
-        }
-
-        void ResetCellsState()
-        {
-            for (int x = 0; x < _gridView.Nodes.GetLength(0); x++)
-            {
-                for (int y = 0; y < _gridView.Nodes.GetLength(1); y++)
-                {
-                    var node = _gridView.Nodes[x, y];
-                    node.g = int.MaxValue;
-                    node.h = int.MaxValue;
-                    var cell = node.cell;
-
-                    cell.SetTextVisibility(false);
-
-                    if (node == _startNode ||
-                        node == _goalNode)
-                        continue;
-
-                    if (node.state == NodeState.Open)
-                    {
-                        cell.SetState(GridCell.CellState.Empty);
-                    } else
-                    {
-                        cell.SetState(GridCell.CellState.Blocked);
-                    }
-                }
-            }
         }
 
         static int CalculateHeuristic(Node node1, Node node2)

@@ -1967,12 +1967,9 @@ public class AstarPath : VersionedMonoBehaviour {
 
 		// Outside of play mode, all path requests are synchronous
 
-        ///
-        /// Added for testing purpose!
-        /// 
-		//if (!Application.isPlaying) {
+		if (!Application.isPlaying) {
 			BlockUntilCalculated(path);
-		//}
+		}
 	}
 
 	/// <summary>
