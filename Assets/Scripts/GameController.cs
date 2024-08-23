@@ -117,6 +117,7 @@ namespace Game
 
                 var graph = new Graph(_GraphController, grids);
                 var pathfinder = graph.CreatePahtfinder();
+                //pathfinder.DiagonalsWalkable = true;
                 float time = Time.realtimeSinceStartup;
                 var path = pathfinder.Search(graph.GetNode(_startNode.x, _startNode.y), graph.GetNode(_goalNode.x, _goalNode.y));
                 SetResult("m039 Pathfinding: elapse time = " + ((Time.realtimeSinceStartup - time) * 1000) + " ms.");
