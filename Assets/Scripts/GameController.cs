@@ -84,6 +84,8 @@ namespace Game
 
         GridGraph _gridGraph;
 
+        const int AverageCount = 100;
+
         public void OnFindPathClicked()
         {
             if (_goalNode == null)
@@ -117,9 +119,15 @@ namespace Game
 
                 var graph = new Graph(_GraphController, grids);
                 var pathfinder = graph.CreatePahtfinder();
-                float time = Time.realtimeSinceStartup;
-                var path = pathfinder.Search(graph.GetNode(_startNode.x, _startNode.y), graph.GetNode(_goalNode.x, _goalNode.y));
-                SetResult("m039 Pathfinding: elapse time = " + ((Time.realtimeSinceStartup - time) * 1000) + " ms.");
+                var timeAverage = 0f;
+                m039.Common.Pathfindig.Path path = null;
+                for (int i = 0; i < AverageCount; i++)
+                {
+                    float time = Time.realtimeSinceStartup;
+                    path = pathfinder.Search(graph.GetNode(_startNode.x, _startNode.y), graph.GetNode(_goalNode.x, _goalNode.y));
+                    timeAverage += Time.realtimeSinceStartup - time;
+                }
+                SetResult("m039 Pathfinding: elapse time = " + ((timeAverage / AverageCount) * 1000) + " ms.");
                 DrawPath(path.vectorPath);
             } else if (variant == "A* Pathfinding Project")
             {
@@ -145,26 +153,31 @@ namespace Game
 
                 _gridGraph.GetNodes(node => _gridGraph.CalculateConnections((GridNodeBase)node));
 
-                float time = 0f;
+                var timeAverage = 0f;
+                List<Vector3> path = null;
 
-                var p = ABPath.Construct(_startNode.cell.transform.position, _goalNode.cell.transform.position, p =>
+                for (int i = 0; i < AverageCount; i++)
                 {
-                    SetResult("A* Project Pathfinding: elapse time = " + ((Time.realtimeSinceStartup - time) * 1000) + " ms.");
-                    DrawPath(p.vectorPath);
-                });
+                    float time = Time.realtimeSinceStartup;
+                    var p = ABPath.Construct(_startNode.cell.transform.position, _goalNode.cell.transform.position, p =>
+                    {
+                        path = p.vectorPath;
+                        timeAverage += Time.realtimeSinceStartup - time;
+                    });
 
-                time = Time.realtimeSinceStartup;
+                    AstarPath.StartPath(p, true);
+                    AstarPath.BlockUntilCalculated(p);
+                }
 
-                AstarPath.StartPath(p, true);
-                AstarPath.BlockUntilCalculated(p);
-
-            } else if (variant == "Debug Pathfinding")
+                SetResult("A* Project Pathfinding: elapse time = " + ((timeAverage / AverageCount) * 1000) + " ms.");
+                DrawPath(path);
+            }
+            else if (variant == "Debug Pathfinding")
             {
                 _findPathCoroutine = StartCoroutine(FindPathCoroutine());
 
             } else if (variant == "Ronen Pathfinding")
             {
-
                 var width = _GridView.columns;
                 var height = _GridView.rows;
 
@@ -179,11 +192,18 @@ namespace Game
 
                 var from = new PathFind.Point(_startNode.x, _startNode.y);
                 var to = new PathFind.Point(_goalNode.x, _goalNode.y);
+                List<PathFind.Point> path = null;
+                var timeAverage = 0f;
+                var grid = new PathFind.Grid(width, height, tilesmap);
 
-                float time = Time.realtimeSinceStartup;
-                var path = PathFind.Pathfinding.FindPath(new PathFind.Grid(width, height, tilesmap), from, to);
-                SetResult("Ronen Pathfinding: elapse time = " + ((Time.realtimeSinceStartup - time) * 1000) + " ms.");
+                for (int i = 0; i < AverageCount; i++)
+                {
+                    float time = Time.realtimeSinceStartup;
+                    path = PathFind.Pathfinding.FindPath(grid, from, to);
+                    timeAverage += Time.realtimeSinceStartup - time;
+                }
 
+                SetResult("Ronen Pathfinding: elapse time = " + ((timeAverage / AverageCount) * 1000) + " ms.");
                 DrawPath(path.Select(p => _GridView.Nodes[p.x, p.y].cell.transform.position).ToList());
             }
         }
