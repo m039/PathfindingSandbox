@@ -1,8 +1,8 @@
-# Pathfinding Sandbox
+# Pathfinding Testbed
 
 This project contains a demo to test benchmarks of some A\* search algorithms in Unity. 
 
-[You can try it in a browser](http://m039.github.io/PathfindingSandbox), but it gives inaccurate results. It is better to use a desktop build.
+[You can try it in a browser](http://m039.github.io/PathfindingTestbed), but it gives inaccurate results. It is better to use a desktop build.
 
 Algorithms used:
 * [Pathfinding by m039](https://github.com/m039/CommonUnityLibrary/tree/16189a32a353a77fd8ca36687641e57c09dbaf89/Runtime/Scripts/AI/Pathfinding) (from [Common Unit Library](https://github.com/m039/CommonUnityLibrary))
